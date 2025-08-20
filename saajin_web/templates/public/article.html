@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Article Detail | Saajin Block</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+<nav class="bg-purple-700 text-white p-4">
+    <a href="/" class="underline">&larr; Back to Home</a>
+</nav>
+
+<div class="max-w-4xl mx-auto p-6 bg-white mt-6 rounded shadow">
+    <img id="articleImage" class="w-full h-60 object-cover rounded"/>
+    <h1 id="articleTitle" class="font-bold text-3xl mt-4 text-purple-700"></h1>
+    <p id="articleContent" class="mt-4 text-gray-700 whitespace-pre-line"></p>
+</div>
+
+<div class="max-w-4xl mx-auto p-6 bg-white mt-6 rounded shadow">
+    <h2 class="font-bold mb-4 text-xl">Leave a Comment</h2>
+    <form id="commentForm" class="mb-6">
+        <input id="cName" type="text" class="border p-2 mb-2 w-full" placeholder="Your Name*" required>
+        <input id="cEmail" type="email" class="border p-2 mb-2 w-full" placeholder="Your Email*" required>
+        <textarea id="cMsg" class="border p-2 mb-2 w-full" rows="4" placeholder="Your Comment*" required></textarea>
+        <button class="bg-purple-700 text-white px-4 py-2 rounded">Submit Comment</button>
+    </form>
+
+    <h2 class="font-bold mb-3 text-xl">All Comments</h2>
+    <div id="commentsList" class="space-y-4"></div>
+</div>
+
+<script>
+const articleId = window.location.pathname.split("/").filter(Boolean).pop();
+
+// Load full article
+async function loadArticle(){
+    const res = await fetch(`/api/articles/${articleId}/`);
+    const d   = await res.json();
+    document.getElementById("articleTitle").innerText = d.title;
+    document.getElementById("articleContent").innerText = d.content;
+    document.getElementById("articleImage").src = d.image || "/static/no-image.png";
+}
+
+// Load comments
+async function loadComments(){
+    const res = await fetch(`/api/comments/?article=${articleId}`);
+    const out = await res.json();
+    let html="";
+    out.results.forEach(c=>{
+        html += `
+           <div class="border p-3 rounded">
+                <p class="font-semibold">${c.name} <span class="text-sm text-gray-500">(${new Date(c.created_at).toLocaleDateString()})</span></p>
+                <p>${c.message}</p>
+           </div>
+        `;
+    });
+    document.getElementById("commentsList").innerHTML = html;
+}
+
+// Submit new comment
+document.getElementById("commentForm").addEventListener("submit", async(e)=>{
+    e.preventDefault();
+    const body = {
+        name:  document.getElementById("cName").value,
+        email: document.getElementById("cEmail").value,
+        message: document.getElementById("cMsg").value,
+        article_id: articleId
+    };
+    const res = await fetch('/api/comments/', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(body)
+    });
+    if(res.ok){ alert("Comment sent!"); loadComments(); e.target.reset(); }
+    else{ alert("Failed to send comment."); }
+});
+
+// init
+loadArticle();
+loadComments();
+</script>
+</body>
+</html>

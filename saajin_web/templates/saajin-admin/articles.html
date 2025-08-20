@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Articles | Saajin Block</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .table-row-hover:hover {
+            background-color: #f9fafb;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .notification.success {
+            background-color: #10b981;
+        }
+        .notification.error {
+            background-color: #ef4444;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-newspaper text-2xl mr-3"></i>
+                    <h1 class="text-xl font-bold">Saajin Block | Articles</h1>
+                </div>
+                <div class="flex items-center">
+                    <a href="/saajin-admin/dashboard/" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg flex items-center transition duration-200">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        <span>Back to Dashboard</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800">Manage Articles</h2>
+            <p class="text-gray-600">Create, edit, and manage your blog articles</p>
+        </div>
+
+        <!-- Add Article Form -->
+        <div class="bg-white shadow rounded-xl p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">Add New Article</h2>
+                <div class="text-sm text-gray-500">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    All fields marked with * are required
+                </div>
+            </div>
+            <form id="addArticleForm" class="grid gap-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+                    <input type="text" id="title" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter article title" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Content *</label>
+                    <textarea id="content" rows="4" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Write your article content here" required></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                    <select id="category" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        <option value="">Select a category</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Featured Image</label>
+                    <div class="flex items-center">
+                        <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl mb-2"></i>
+                                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                <p class="text-xs text-gray-500">PNG, JPG, GIF (MAX. 5MB)</p>
+                            </div>
+                            <input type="file" id="image" class="hidden" />
+                        </label>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg flex items-center transition duration-200">
+                        <i class="fas fa-plus mr-2"></i>
+                        Create Article
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Articles Table -->
+        <div class="bg-white shadow rounded-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-lg font-semibold text-gray-800">All Articles</h2>
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Search articles..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button id="refreshBtn" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition duration-200">
+                        <i class="fas fa-sync-alt text-gray-600"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thumbnail</th>
+                            <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                            <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                            <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="articleTable" class="bg-white divide-y divide-gray-200">
+                        <!-- Table rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
+                <div class="text-sm text-gray-700">
+                    Showing <span id="showingStart">1</span> to <span id="showingEnd">5</span> of <span id="totalItems">0</span> articles
+                </div>
+                <div class="flex space-x-2">
+                    <button id="prevBtn" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition duration-200 flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-left mr-2"></i>
+                        Previous
+                    </button>
+                    <button id="nextBtn" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition duration-200 flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                        Next
+                        <i class="fas fa-chevron-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl mx-4 fade-in">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-lg font-semibold text-gray-800">Edit Article</h2>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="editForm" class="p-6 space-y-5">
+                <input type="hidden" id="edit_id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+                    <input type="text" id="edit_title" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Content *</label>
+                    <textarea id="edit_content" rows="4" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                    <select id="edit_category" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        <option value="">Select a category</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Featured Image</label>
+                    <div class="flex items-center">
+                        <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl mb-2"></i>
+                                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                <p class="text-xs text-gray-500">PNG, JPG, GIF (MAX. 5MB)</p>
+                            </div>
+                            <input type="file" id="edit_image" class="hidden" />
+                        </label>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition duration-200">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200 flex items-center">
+                        <i class="fas fa-save mr-2"></i>
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    const pageSize = 5;
+    let currentPage = 1;
+    let totalPages = 1;
+    let totalItems = 0;
+
+    // Show notification
+    function showNotification(message, type = 'success') {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        notification.className = `notification ${type}`;
+        notification.classList.add('show');
+
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+
+    // ------- Load Categories dropdown -------
+    async function loadCategories() {
+        try {
+            const res = await fetch('/api/categories/');
+            const data = await res.json();
+            const categories = data.results;
+            let options = "<option value=''>Select a category</option>";
+            categories.forEach(cat => {
+                options += `<option value="${cat.id}">${cat.name}</option>`;
+            });
+            document.getElementById("category").innerHTML = options;
+            document.getElementById("edit_category").innerHTML = options;
+        } catch(err) {
+            console.error("Failed to load categories", err);
+            showNotification("Failed to load categories", "error");
+        }
+    }
+
+    // ------- Load Articles -------
+    async function loadArticles(page=1) {
+        try {
+            const res = await fetch(`/api/articles/?page=${page}`);
+            const data = await res.json();
+
+            // Update pagination info
+            totalItems = data.count;
+            totalPages = Math.ceil(totalItems / pageSize);
+            currentPage = page;
+
+            // Update pagination display
+            document.getElementById("showingStart").textContent = totalItems > 0 ? (page - 1) * pageSize + 1 : 0;
+            document.getElementById("showingEnd").textContent = Math.min(page * pageSize, totalItems);
+            document.getElementById("totalItems").textContent = totalItems;
+
+            // Update pagination buttons
+            document.getElementById("prevBtn").disabled = page <= 1;
+            document.getElementById("nextBtn").disabled = page >= totalPages;
+
+            // Build table rows
+            let rows = "";
+            if (data.results.length === 0) {
+                rows = `
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-gray-500">
+                            <i class="fas fa-inbox text-4xl mb-2"></i>
+                            <p>No articles found</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                data.results.forEach(a => {
+                    rows += `
+                    <tr class="table-row-hover">
+                        <td class="py-3 px-4 text-sm text-gray-900">${a.id}</td>
+                        <td class="py-3 px-4">
+                            <img src="${a.image || 'https://via.placeholder.com/60'}" alt="${a.title}" class="w-12 h-12 rounded-lg object-cover">
+                        </td>
+                        <td class="py-3 px-4 text-sm font-medium text-gray-900 max-w-xs truncate">${a.title}</td>
+                        <td class="py-3 px-4 text-sm text-gray-500">${a.category ? a.category.name : 'Uncategorized'}</td>
+                        <td class="py-3 px-4 text-sm">
+                            <button onclick="openModal(${a.id}, '${a.title.replace(/'/g, "\\'")}', '${a.content.replace(/'/g, "\\'")}', ${a.category ? a.category.id : 'null'})"
+                                    class="text-blue-600 hover:text-blue-900 mr-3">
+                                <i class="fas fa-edit mr-1"></i> Edit
+                            </button>
+                            <button onclick="deleteArticle(${a.id})" class="text-red-600 hover:text-red-900">
+                                <i class="fas fa-trash-alt mr-1"></i> Delete
+                            </button>
+                        </td>
+                    </tr>`;
+                });
+            }
+            document.getElementById("articleTable").innerHTML = rows;
+        } catch(err) {
+            console.error("Failed to load articles", err);
+            showNotification("Failed to load articles", "error");
+        }
+    }
+
+    // ------- Add Article -------
+    document.getElementById("addArticleForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalContent = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="loading"></span> Creating...';
+        submitBtn.disabled = true;
+
+        const fd = new FormData();
+        fd.append("title", document.getElementById("title").value);
+        fd.append("content", document.getElementById("content").value);
+        fd.append("category_id", document.getElementById("category").value);
+        if(document.getElementById("image").files.length){
+            fd.append("image", document.getElementById("image").files[0]);
+        }
+
+        try {
+            const res = await fetch('/api/articles/', {
+                method: 'POST',
+                headers: {'Authorization': 'Bearer ' + localStorage.getItem('access')},
+                body: fd
+            });
+
+            if(res.ok){
+                showNotification("Article created successfully!");
+                loadArticles(currentPage);
+                e.target.reset();
+            } else {
+                const errorData = await res.json();
+                showNotification(`Failed: ${errorData.detail || 'Unknown error'}`, "error");
+            }
+        } catch(err) {
+            console.error("Error creating article", err);
+            showNotification("Failed to create article", "error");
+        } finally {
+            submitBtn.innerHTML = originalContent;
+            submitBtn.disabled = false;
+        }
+    });
+
+    // ------- Delete -------
+    async function deleteArticle(id){
+        if(!confirm("Are you sure you want to delete this article? This action cannot be undone.")) return;
+
+        try {
+            const res = await fetch(`/api/articles/${id}/`, {
+                method:'DELETE',
+                headers: {'Authorization':'Bearer ' + localStorage.getItem('access')}
+            });
+
+            if(res.status===204){
+                showNotification("Article deleted successfully!");
+                // If we're on the last page and it becomes empty, go to previous page
+                if (document.getElementById("articleTable").children.length === 1 && currentPage > 1) {
+                    loadArticles(currentPage - 1);
+                } else {
+                    loadArticles(currentPage);
+                }
+            } else {
+                showNotification("Failed to delete article", "error");
+            }
+        } catch(err) {
+            console.error("Error deleting article", err);
+            showNotification("Failed to delete article", "error");
+        }
+    }
+
+    // ------- Edit Modal -------
+    function openModal(id, title, content, cat){
+        document.getElementById("edit_id").value = id;
+        document.getElementById("edit_title").value = title;
+        document.getElementById("edit_content").value = content;
+        document.getElementById("edit_category").value = cat || '';
+        document.getElementById("editModal").classList.remove("hidden");
+        document.getElementById("editModal").classList.add("flex");
+    }
+
+    function closeModal(){
+        document.getElementById("editModal").classList.add("hidden");
+        document.getElementById("editModal").classList.remove("flex");
+    }
+
+    // Save edited:
+    document.getElementById("editForm").addEventListener("submit", async (e)=>{
+        e.preventDefault();
+
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalContent = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="loading"></span> Saving...';
+        submitBtn.disabled = true;
+
+        const id = document.getElementById("edit_id").value;
+        const fd = new FormData();
+        fd.append("title", document.getElementById("edit_title").value);
+        fd.append("content", document.getElementById("edit_content").value);
+        fd.append("category_id", document.getElementById("edit_category").value);
+        if(document.getElementById("edit_image").files.length){
+            fd.append("image", document.getElementById("edit_image").files[0]);
+        }
+
+        try {
+            const res = await fetch(`/api/articles/${id}/`, {
+                method:"PUT",
+                headers:{'Authorization':'Bearer ' + localStorage.getItem('access')},
+                body: fd
+            });
+
+            if(res.ok){
+                showNotification("Article updated successfully!");
+                closeModal();
+                loadArticles(currentPage);
+            } else {
+                const errorData = await res.json();
+                showNotification(`Failed: ${errorData.detail || 'Unknown error'}`, "error");
+            }
+        } catch(err) {
+            console.error("Error updating article", err);
+            showNotification("Failed to update article", "error");
+        } finally {
+            submitBtn.innerHTML = originalContent;
+            submitBtn.disabled = false;
+        }
+    });
+
+    // ----- Pagination Buttons -------
+    document.getElementById("prevBtn").addEventListener("click", ()=> {
+        if(currentPage>1) loadArticles(currentPage-1);
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", ()=> {
+        if(currentPage < totalPages) loadArticles(currentPage+1);
+    });
+
+    // ----- Refresh Button -----
+    document.getElementById("refreshBtn").addEventListener("click", ()=> {
+        loadArticles(currentPage);
+    });
+
+    // ----- Search Functionality -----
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+        // This is a simple client-side filter - in a real app you'd want to implement server-side search
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll("#articleTable tr");
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? "" : "none";
+        });
+    });
+
+    // INIT:
+    loadCategories();
+    loadArticles();
+    </script>
+</body>
+</html>

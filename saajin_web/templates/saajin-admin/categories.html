@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Categories | Saajin Block</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .notification.success {
+            background-color: #10b981;
+        }
+        .notification.error {
+            background-color: #ef4444;
+        }
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .category-card {
+            transition: all 0.2s ease;
+        }
+        .category-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .empty-state {
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='0.1'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-folder text-2xl mr-3"></i>
+                    <h1 class="text-xl font-bold">Saajin Block | Categories</h1>
+                </div>
+                <div class="flex items-center">
+                    <a href="/saajin-admin/dashboard/" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg flex items-center transition duration-200">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        <span>Back to Dashboard</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800">Manage Categories</h2>
+            <p class="text-gray-600">Organize your content with categories</p>
+        </div>
+
+        <!-- Add Category Form -->
+        <div class="bg-white shadow rounded-xl p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">Add New Category</h2>
+                <div class="text-sm text-gray-500">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Create categories to organize your articles
+                </div>
+            </div>
+            <form id="addCatForm" class="flex gap-3">
+                <div class="flex-grow">
+                    <input type="text" id="newName" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter category name" required>
+                </div>
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg flex items-center transition duration-200">
+                    <i class="fas fa-plus mr-2"></i>
+                    Add Category
+                </button>
+            </form>
+        </div>
+
+        <!-- Categories List -->
+        <div class="bg-white shadow rounded-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-lg font-semibold text-gray-800">All Categories</h2>
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Search categories..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button id="refreshBtn" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition duration-200">
+                        <i class="fas fa-sync-alt text-gray-600"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table View for Desktop -->
+            <div class="hidden md:block overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Articles</th>
+                            <th class="py-3 px-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="catTable" class="bg-white divide-y divide-gray-200">
+                        <!-- Table rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Card View for Mobile -->
+            <div id="catCards" class="md:hidden p-4 grid grid-cols-1 gap-4">
+                <!-- Cards will be inserted here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden p-12 text-center empty-state">
+                <i class="fas fa-folder-open text-5xl text-gray-300 mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-900 mb-1">No categories found</h3>
+                <p class="text-gray-500">Get started by creating a new category</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 fade-in">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-gray-800">Edit Category</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="editForm" class="p-6 space-y-4">
+                <input type="hidden" id="edit_id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
+                    <input type="text" id="edit_name" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition duration-200">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200 flex items-center">
+                        <i class="fas fa-save mr-2"></i>
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    // Show notification
+    function showNotification(message, type = 'success') {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        notification.className = `notification ${type}`;
+        notification.classList.add('show');
+
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+
+    // Load categories + article counts
+    async function loadCategories(){
+        try {
+            // Show loading state
+            document.getElementById('catTable').innerHTML = `
+                <tr>
+                    <td colspan="4" class="py-8 text-center text-gray-500">
+                        <div class="inline-block loading"></div>
+                        <p class="mt-2">Loading categories...</p>
+                    </td>
+                </tr>
+            `;
+            document.getElementById('catCards').innerHTML = `
+                <div class="col-span-1 p-8 text-center">
+                    <div class="inline-block loading"></div>
+                    <p class="mt-2">Loading categories...</p>
+                </div>
+            `;
+
+            // get paginated categories
+            const catRes = await fetch('/api/categories/');
+            const catData = await catRes.json();
+            const categories = catData.results;
+
+            // get paginated articles
+            const artRes = await fetch('/api/articles/');
+            const artData = await artRes.json();
+            const arts = artData.results;
+
+            // Check if we have categories
+            if (categories.length === 0) {
+                document.getElementById('catTable').innerHTML = '';
+                document.getElementById('catCards').innerHTML = '';
+                document.getElementById('emptyState').classList.remove('hidden');
+                return;
+            } else {
+                document.getElementById('emptyState').classList.add('hidden');
+            }
+
+            // Build table HTML
+            let tableHtml = '';
+            let cardsHtml = '';
+
+            categories.forEach(c => {
+                const count = arts.filter(a => a.category && a.category.id === c.id).length;
+
+                // Table row
+                tableHtml += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-3 px-4 text-sm text-gray-900">${c.id}</td>
+                        <td class="py-3 px-4 text-sm font-medium text-gray-900">${c.name}</td>
+                        <td class="py-3 px-4 text-sm text-gray-500">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                ${count} article${count !== 1 ? 's' : ''}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-sm text-right">
+                            <button onclick="openModal(${c.id}, '${c.name.replace(/'/g, "\\'")}')" class="text-blue-600 hover:text-blue-900 mr-3">
+                                <i class="fas fa-edit mr-1"></i> Edit
+                            </button>
+                            <button onclick="delCat(${c.id})" class="text-red-600 hover:text-red-900">
+                                <i class="fas fa-trash-alt mr-1"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+
+                // Card
+                cardsHtml += `
+                    <div class="category-card bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-900">${c.name}</h3>
+                                <p class="mt-1 text-sm text-gray-500">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        ${count} article${count !== 1 ? 's' : ''}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="openModal(${c.id}, '${c.name.replace(/'/g, "\\'")}')" class="text-blue-600 hover:text-blue-900 p-2 rounded-full hover:bg-blue-50">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="delCat(${c.id})" class="text-red-600 hover:text-red-900 p-2 rounded-full hover:bg-red-50">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('catTable').innerHTML = tableHtml;
+            document.getElementById('catCards').innerHTML = cardsHtml;
+        } catch(err) {
+            console.error("Failed to load categories", err);
+            showNotification("Failed to load categories", "error");
+            document.getElementById('catTable').innerHTML = `
+                <tr>
+                    <td colspan="4" class="py-8 text-center text-gray-500">
+                        <i class="fas fa-exclamation-circle text-4xl mb-2"></i>
+                        <p>Error loading categories</p>
+                    </td>
+                </tr>
+            `;
+            document.getElementById('catCards').innerHTML = `
+                <div class="col-span-1 p-8 text-center">
+                    <i class="fas fa-exclamation-circle text-4xl mb-2"></i>
+                    <p>Error loading categories</p>
+                </div>
+            `;
+        }
+    }
+
+    // Add category
+    document.getElementById('addCatForm').addEventListener('submit', async (e)=>{
+        e.preventDefault();
+
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalContent = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="loading"></span> Adding...';
+        submitBtn.disabled = true;
+
+        try {
+            const res = await fetch('/api/categories/', {
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'Authorization':'Bearer ' + localStorage.getItem('access')
+                },
+                body: JSON.stringify({name: document.getElementById('newName').value})
+            });
+
+            if(res.ok){
+                showNotification("Category created successfully!");
+                loadCategories();
+                e.target.reset();
+            } else {
+                const errorData = await res.json();
+                showNotification(`Failed: ${errorData.detail || 'Unknown error'}`, "error");
+            }
+        } catch(err) {
+            console.error("Error creating category", err);
+            showNotification("Failed to create category", "error");
+        } finally {
+            submitBtn.innerHTML = originalContent;
+            submitBtn.disabled = false;
+        }
+    });
+
+    // Delete
+    async function delCat(id){
+        if(!confirm("Are you sure you want to delete this category? This action cannot be undone.")) return;
+
+        try {
+            const res = await fetch(`/api/categories/${id}/`, {
+                method: 'DELETE',
+                headers:{'Authorization':'Bearer ' + localStorage.getItem('access')}
+            });
+
+            if(res.status===204){
+                showNotification("Category deleted successfully!");
+                loadCategories();
+            } else {
+                showNotification("Failed to delete category", "error");
+            }
+        } catch(err) {
+            console.error("Error deleting category", err);
+            showNotification("Failed to delete category", "error");
+        }
+    }
+
+    // Edit modal
+    function openModal(id,name){
+        document.getElementById('edit_id').value = id;
+        document.getElementById('edit_name').value = name;
+        document.getElementById('editModal').classList.remove('hidden');
+        document.getElementById('editModal').classList.add('flex');
+    }
+
+    function closeModal(){
+        document.getElementById('editModal').classList.add('hidden');
+        document.getElementById('editModal').classList.remove('flex');
+    }
+
+    // Save edited
+    document.getElementById('editForm').addEventListener('submit', async (e)=>{
+        e.preventDefault();
+
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalContent = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="loading"></span> Saving...';
+        submitBtn.disabled = true;
+
+        const id = document.getElementById('edit_id').value;
+        const name = document.getElementById('edit_name').value;
+
+        try {
+            const res = await fetch(`/api/categories/${id}/`, {
+                method:'PUT',
+                headers:{
+                    'Content-Type':'application/json',
+                    'Authorization':'Bearer ' + localStorage.getItem('access')
+                },
+                body: JSON.stringify({name})
+            });
+
+            if(res.ok){
+                showNotification("Category updated successfully!");
+                closeModal();
+                loadCategories();
+            } else {
+                const errorData = await res.json();
+                showNotification(`Failed: ${errorData.detail || 'Unknown error'}`, "error");
+            }
+        } catch(err) {
+            console.error("Error updating category", err);
+            showNotification("Failed to update category", "error");
+        } finally {
+            submitBtn.innerHTML = originalContent;
+            submitBtn.disabled = false;
+        }
+    });
+
+    // ----- Refresh Button -----
+    document.getElementById('refreshBtn').addEventListener('click', ()=> {
+        loadCategories();
+    });
+
+    // ----- Search Functionality -----
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+
+        // Filter table rows
+        const rows = document.querySelectorAll("#catTable tr");
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? "" : "none";
+        });
+
+        // Filter cards
+        const cards = document.querySelectorAll("#catCards .category-card");
+        cards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            card.style.display = text.includes(searchTerm) ? "" : "none";
+        });
+    });
+
+    // init
+    loadCategories();
+    </script>
+</body>
+</html>

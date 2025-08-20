@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Saajin Block — Admin Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="w-full max-w-sm bg-white rounded-lg shadow p-8 space-y-6">
+        <h1 class="text-2xl font-semibold text-center">Saajin Block Admin Login</h1>
+        <form id="loginForm" class="space-y-4">
+            <input id="username" type="text" placeholder="Username" class="w-full border p-2 rounded" required />
+            <input id="password" type="password" placeholder="Password" class="w-full border p-2 rounded" required />
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                Login
+            </button>
+        </form>
+        <p id="error" class="text-red-500 text-center hidden">Invalid credentials</p>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/api/login/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // store the token
+                localStorage.setItem('access', data.access);
+                localStorage.setItem('refresh', data.refresh);
+                // redirect to dashboard (served by Django)
+                window.location.href = '/saajin-admin/dashboard/';
+            } else {
+                document.getElementById('error').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>

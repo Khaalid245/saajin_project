@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Articles | Saajin Block</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #6d28d9 0%, #14b8a6 100%);
+        }
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .article-card {
+            transition: all 0.3s ease;
+        }
+        .article-card:hover .article-image {
+            transform: scale(1.05);
+        }
+        .article-image {
+            transition: transform 0.5s ease;
+        }
+        .page-btn {
+            transition: all 0.2s ease;
+        }
+        .page-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Menu Overlay Styles */
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-menu-drawer {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: white;
+            z-index: 1001;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-menu-drawer.active {
+            left: 0;
+        }
+
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .mobile-menu-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.2s;
+        }
+
+        .mobile-menu-close:hover {
+            color: #4b5563;
+        }
+
+        .mobile-menu-links {
+            padding: 1rem 0;
+        }
+
+        .mobile-menu-link {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #4b5563;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .mobile-menu-link:hover {
+            background-color: #f3f4f6;
+            color: #6d28d9;
+        }
+
+        .mobile-menu-link.active {
+            color: #6d28d9;
+            background-color: #f3f4f6;
+            border-left: 3px solid #6d28d9;
+        }
+
+        /* Prevent body scroll when menu is open */
+        body.menu-open {
+            overflow: hidden;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .page-header {
+                margin-bottom: 1.5rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.75rem;
+            }
+
+            .filter-section {
+                padding: 1rem;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .filter-controls select {
+                width: 100%;
+            }
+
+            .article-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .article-card {
+                max-width: 100%;
+            }
+
+            .article-image {
+                height: 200px;
+            }
+
+            .pagination {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .page-btn {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .filter-section {
+                padding: 0.75rem;
+            }
+
+            .article-card {
+                padding: 0.75rem;
+            }
+
+            .article-image {
+                height: 180px;
+            }
+
+            .article-card h3 {
+                font-size: 1rem;
+            }
+
+            .article-card p {
+                font-size: 0.875rem;
+            }
+
+            .author-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .read-more-btn {
+                font-size: 0.75rem;
+            }
+
+            .page-btn {
+                padding: 0.375rem 0.625rem;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+<!-- Navbar -->
+<nav class="bg-white shadow-md py-4 px-6 flex justify-between items-center sticky top-0 z-50">
+    <div class="flex items-center space-x-2">
+        <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center">
+            <i class="fas fa-cube text-white text-xl"></i>
+        </div>
+        <h1 class="font-bold text-2xl text-purple-800">Saajin Block</h1>
+    </div>
+    <div class="hidden md:flex space-x-6">
+        <a href="/" class="text-gray-700 hover:text-purple-700 transition-colors">Home</a>
+        <a href="/about/" class="text-gray-700 hover:text-purple-700 transition-colors">About</a>
+        <a href="/all-articles/" class="text-purple-700 font-bold">Articles</a>
+        <a href="/contact/" class="text-gray-700 hover:text-purple-700 transition-colors">Contact</a>
+        <a href="/saajin-admin/login/" class="bg-purple-700 text-white px-4 py-2 rounded-lg hover:bg-purple-800 transition-colors">Admin Login</a>
+    </div>
+    <div class="md:hidden">
+        <button id="mobileMenuBtn" class="text-purple-700">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+    </div>
+</nav>
+
+<!-- Mobile Menu Overlay -->
+<div id="mobileMenuOverlay" class="mobile-menu-overlay">
+    <div id="mobileMenuDrawer" class="mobile-menu-drawer">
+        <div class="mobile-menu-header">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center">
+                    <i class="fas fa-cube text-white"></i>
+                </div>
+                <h2 class="font-bold text-xl text-purple-800">Saajin Block</h2>
+            </div>
+            <button id="mobileMenuClose" class="mobile-menu-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="mobile-menu-links">
+            <a href="/" class="mobile-menu-link">Home</a>
+            <a href="/about/" class="mobile-menu-link">About</a>
+            <a href="/all-articles/" class="mobile-menu-link active">Articles</a>
+            <a href="/contact/" class="mobile-menu-link">Contact</a>
+            <a href="/saajin-admin/login/" class="mobile-menu-link">Admin Login</a>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="max-w-6xl mx-auto px-6 py-8">
+    <!-- Page Header -->
+    <div class="mb-8 page-header">
+        <h1 class="text-3xl font-bold text-purple-800 mb-2">All Articles</h1>
+        <p class="text-gray-600">Browse our complete collection of articles</p>
+    </div>
+    <!-- Search and Filters -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8 filter-section">
+        <div class="flex flex-col md:flex-row gap-4 items-center filter-controls">
+            <!-- Search Bar -->
+            <div class="relative flex-1">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search articles..."
+                    class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300"
+                    onkeyup="searchArticles()"
+                >
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+            <!-- Category Filter -->
+            <select id="categoryFilter" class="border border-gray-300 rounded-lg px-3 py-3 focus:outline-none focus:ring-1 focus:ring-purple-500" onchange="filterCat(this.value)">
+                <option value="">All Categories</option>
+                <option value="sports">Sports</option>
+                <option value="medical">Medical</option>
+                <option value="social">Social</option>
+                <option value="science">Science</option>
+                <option value="history">History</option>
+            </select>
+            <!-- Sort Options -->
+            <select id="sortSelect" class="border border-gray-300 rounded-lg px-3 py-3 focus:outline-none focus:ring-1 focus:ring-purple-500" onchange="loadArticles()">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="popular">Most Popular</option>
+            </select>
+        </div>
+    </div>
+    <!-- Articles Grid -->
+    <div id="articleGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 article-grid">
+        <!-- Articles will be loaded here -->
+    </div>
+    <!-- Loading indicator -->
+    <div id="loadingIndicator" class="hidden flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-700"></div>
+    </div>
+    <!-- Empty state -->
+    <div id="emptyState" class="hidden text-center py-12">
+        <i class="fas fa-search text-gray-400 text-5xl mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-700 mb-2">No articles found</h3>
+        <p class="text-gray-600">Try adjusting your search or filter criteria</p>
+    </div>
+    <!-- Pagination -->
+    <div class="flex justify-center items-center space-x-2 pagination" id="pagination">
+        <button id="prevBtn" class="page-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">
+            <i class="fas fa-chevron-left mr-1"></i> Previous
+        </button>
+        <div id="pageNumbers" class="flex space-x-1">
+            <!-- Page numbers will be generated here -->
+        </div>
+        <button id="nextBtn" class="page-btn px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed">
+            Next <i class="fas fa-chevron-right ml-1"></i>
+        </button>
+    </div>
+</div>
+<!-- Footer -->
+<footer class="bg-gray-800 text-white py-12 px-6 mt-16">
+    <div class="max-w-6xl mx-auto">
+        <div class="grid md:grid-cols-4 gap-8">
+            <div>
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center">
+                        <i class="fas fa-cube text-white"></i>
+                    </div>
+                    <h4 class="font-bold text-xl">Saajin Block</h4>
+                </div>
+                <p class="text-gray-400">Your gateway to knowledge across sports, medical, social, science, and history.</p>
+            </div>
+            <div>
+                <h5 class="font-bold text-lg mb-4">Quick Links</h5>
+                <ul class="space-y-2">
+                    <li><a href="/" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                    <li><a href="/about/" class="text-gray-400 hover:text-white transition-colors">About</a></li>
+                    <li><a href="/all-articles/" class="text-gray-400 hover:text-white transition-colors">Articles</a></li>
+                    <li><a href="/contact/" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold text-lg mb-4">Categories</h5>
+                <ul class="space-y-2">
+                    <li><a href="/sports/" class="text-gray-400 hover:text-white transition-colors">Sports</a></li>
+                    <li><a href="/medical/" class="text-gray-400 hover:text-white transition-colors">Medical</a></li>
+                    <li><a href="/social/" class="text-gray-400 hover:text-white transition-colors">Social</a></li>
+                    <li><a href="/science/" class="text-gray-400 hover:text-white transition-colors">Science</a></li>
+                    <li><a href="/history/" class="text-gray-400 hover:text-white transition-colors">History</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold text-lg mb-4">Connect With Us</h5>
+                <div class="flex space-x-4 mb-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl"><i class="fab fa-linkedin"></i></a>
+                </div>
+                <p class="text-gray-400">Subscribe to our newsletter for updates</p>
+                <div class="mt-2 flex">
+                    <input type="email" placeholder="Your email" class="bg-gray-700 text-white px-4 py-2 rounded-l-lg w-full focus:outline-none focus:ring-1 focus:ring-purple-500">
+                    <button class="bg-purple-600 px-4 py-2 rounded-r-lg hover:bg-purple-700 transition-colors">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+            <p>© <span id="year"></span> Saajin Block — All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// Mobile menu functionality
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+const mobileMenuDrawer = document.getElementById('mobileMenuDrawer');
+const mobileMenuClose = document.getElementById('mobileMenuClose');
+const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
+
+// Open mobile menu
+mobileMenuBtn.addEventListener('click', function() {
+    mobileMenuOverlay.classList.add('active');
+    mobileMenuDrawer.classList.add('active');
+    document.body.classList.add('menu-open');
+});
+
+// Close mobile menu
+function closeMobileMenu() {
+    mobileMenuOverlay.classList.remove('active');
+    mobileMenuDrawer.classList.remove('active');
+    document.body.classList.remove('menu-open');
+}
+
+// Close menu when clicking on the overlay
+mobileMenuOverlay.addEventListener('click', function(e) {
+    if (e.target === mobileMenuOverlay) {
+        closeMobileMenu();
+    }
+});
+
+// Close menu when clicking on the close button
+mobileMenuClose.addEventListener('click', closeMobileMenu);
+
+// Close menu when clicking on a link
+mobileMenuLinks.forEach(link => {
+    link.addEventListener('click', closeMobileMenu);
+});
+
+// Variables for pagination and filtering
+let currentPage = 1;
+const pageSize = 9;
+let currentCategory = "";
+let currentSearch = "";
+let totalPages = 1;
+
+// Function to load articles
+async function loadArticles() {
+    // Show loading indicator
+    document.getElementById('loadingIndicator').classList.remove('hidden');
+    document.getElementById('emptyState').classList.add('hidden');
+    // Build URL with parameters
+    let url = `/api/articles/?page=${currentPage}&page_size=${pageSize}`;
+    if (currentCategory) url += `&category=${currentCategory}`;
+    if (currentSearch) url += `&search=${currentSearch}`;
+    // Add sort parameter
+    const sortValue = document.getElementById('sortSelect').value;
+    if (sortValue === 'newest') url += '&ordering=-publish_date';
+    else if (sortValue === 'oldest') url += '&ordering=publish_date';
+    else if (sortValue === 'popular') url += '&ordering=-view_count';
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        // Calculate total pages
+        totalPages = Math.ceil(data.count / pageSize);
+        // Generate article cards
+        let html = "";
+        if (data.results && data.results.length > 0) {
+            data.results.forEach(article => {
+                // Get category info
+                let categoryInfo = getCategoryInfo(article.category);
+                html += `
+                <div class="article-card bg-white rounded-lg shadow-md overflow-hidden hover-lift">
+                    <div class="overflow-hidden h-48">
+                        <img src="${article.image || '/static/no-image.png'}"
+                             class="article-image w-full h-full object-cover"
+                             alt="${article.title}">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${categoryInfo.colorClass}">
+                                <i class="${categoryInfo.icon} mr-1"></i> ${categoryInfo.name}
+                            </span>
+                            <span class="text-gray-500 text-sm">${formatDate(article.publish_date)}</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-purple-800 mb-2 line-clamp-2">${article.title}</h3>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">${article.content.substring(0, 150)}...</p>
+                        <div class="flex justify-between items-center author-info">
+                            <div class="flex items-center">
+                                <img src="${article.author_image || '/static/default-avatar.png'}"
+                                     class="w-8 h-8 rounded-full mr-2"
+                                     alt="${article.author}">
+                                <span class="text-sm text-gray-700">${article.author || 'Anonymous'}</span>
+                            </div>
+                            <a href="/articles/${article.id}/" class="text-purple-600 hover:text-purple-800 font-medium text-sm flex items-center read-more-btn">
+                                Read more <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
+        } else {
+            // Show empty state if no articles
+            document.getElementById('emptyState').classList.remove('hidden');
+        }
+        document.getElementById("articleGrid").innerHTML = html;
+        // Update pagination
+        updatePagination();
+    } catch (error) {
+        console.error('Error loading articles:', error);
+        document.getElementById('emptyState').classList.remove('hidden');
+    } finally {
+        // Hide loading indicator
+        document.getElementById('loadingIndicator').classList.add('hidden');
+    }
+}
+
+// Function to get category info (icon and color)
+function getCategoryInfo(category) {
+    const categories = {
+        'sports': { name: 'Sports', icon: 'fas fa-football-ball', colorClass: 'bg-purple-100 text-purple-800' },
+        'medical': { name: 'Medical', icon: 'fas fa-heartbeat', colorClass: 'bg-teal-100 text-teal-800' },
+        'social': { name: 'Social', icon: 'fas fa-users', colorClass: 'bg-blue-100 text-blue-800' },
+        'science': { name: 'Science', icon: 'fas fa-flask', colorClass: 'bg-indigo-100 text-indigo-800' },
+        'history': { name: 'History', icon: 'fas fa-landmark', colorClass: 'bg-amber-100 text-amber-800' }
+    };
+    return categories[category] || { name: 'General', icon: 'fas fa-file-alt', colorClass: 'bg-gray-100 text-gray-800' };
+}
+
+// Function to format date
+function formatDate(dateString) {
+    if (!dateString) return 'Recent';
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+}
+
+// Function to update pagination
+function updatePagination() {
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const pageNumbers = document.getElementById('pageNumbers');
+    // Update prev/next buttons
+    prevBtn.disabled = currentPage <= 1;
+    nextBtn.disabled = currentPage >= totalPages;
+    // Generate page numbers
+    let html = "";
+    const maxPagesToShow = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+    if (endPage - startPage + 1 < maxPagesToShow) {
+        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+    // First page
+    if (startPage > 1) {
+        html += `<button onclick="goToPage(1)" class="page-btn w-10 h-10 rounded-full ${1 === currentPage ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}">1</button>`;
+        if (startPage > 2) {
+            html += `<span class="px-2">...</span>`;
+        }
+    }
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+        html += `<button onclick="goToPage(${i})" class="page-btn w-10 h-10 rounded-full ${i === currentPage ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}">${i}</button>`;
+    }
+    // Last page
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            html += `<span class="px-2">...</span>`;
+        }
+        html += `<button onclick="goToPage(${totalPages})" class="page-btn w-10 h-10 rounded-full ${totalPages === currentPage ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}">${totalPages}</button>`;
+    }
+    pageNumbers.innerHTML = html;
+}
+
+// Function to go to specific page
+function goToPage(page) {
+    currentPage = page;
+    loadArticles();
+    // Scroll to top of articles
+    document.getElementById('articleGrid').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Filter by category
+function filterCat(category) {
+    currentCategory = category;
+    currentPage = 1;
+    loadArticles();
+}
+
+// Search articles
+function searchArticles() {
+    currentSearch = document.getElementById("searchInput").value;
+    currentPage = 1;
+    loadArticles();
+}
+
+// Pagination event listeners
+document.getElementById("prevBtn").addEventListener("click", () => {
+    if (currentPage > 1) {
+        currentPage--;
+        loadArticles();
+    }
+});
+
+document.getElementById("nextBtn").addEventListener("click", () => {
+    if (currentPage < totalPages) {
+        currentPage++;
+        loadArticles();
+    }
+});
+
+// Initialize the page
+loadArticles();
+</script>
+</body>
+</html>
