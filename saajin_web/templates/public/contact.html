@@ -123,6 +123,13 @@
             position: relative;
             z-index: 1;
         }
+        /* Testimonial card */
+        .testimonial-card {
+            transition: transform 0.3s ease;
+        }
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+        }
         /* Newsletter section styles */
         .newsletter-section {
             background-color: #f9fafb;
@@ -181,9 +188,6 @@
             .form-container {
                 padding: 1.5rem;
             }
-            .map-container {
-                height: 250px;
-            }
             .social-icons a {
                 width: 40px;
                 height: 40px;
@@ -202,9 +206,6 @@
             }
             .form-container {
                 padding: 1rem;
-            }
-            .map-container {
-                height: 200px;
             }
         }
     </style>
@@ -289,7 +290,7 @@
                     <i class="fas fa-map-marker-alt"></i>
                 </div>
                 <h3 class="font-bold text-lg text-purple-800 mb-2">Our Location</h3>
-                <p class="text-gray-600">123 Knowledge Street<br>Learning City, LC 54321</p>
+                <p class="text-gray-600">We operate globally as a digital platform, connecting with readers and writers worldwide.</p>
             </div>
             <div class="contact-card bg-teal-50 rounded-xl p-6 text-center hover-lift">
                 <div class="contact-icon text-4xl text-teal-600 mb-4">
@@ -308,7 +309,7 @@
         </div>
     </div>
 </section>
-<!-- Contact Form and Map -->
+<!-- Contact Form and Testimonials -->
 <section class="py-16 px-6 bg-gray-50" id="contact-form">
     <div class="max-w-6xl mx-auto">
         <div class="grid md:grid-cols-2 gap-12">
@@ -349,38 +350,91 @@
                 </form>
                 <div id="formMessage" class="mt-4 p-3 rounded-lg hidden"></div>
             </div>
-            <!-- Map and Additional Info -->
+            <!-- Testimonials and Additional Contact Info -->
             <div>
-                <h3 class="text-2xl font-bold text-purple-800 mb-6">Find Us</h3>
-                <div class="bg-gray-200 rounded-xl h-80 mb-6 overflow-hidden map-container">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.9663095343008!2d-73.99185268459418!3d40.74844097932847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259bf5c1654f3%3A0xc80b9f06e177fe62!2sNew%20York%20Public%20Library!5e0!3m2!1sen!2sus!4v1629889217385!5m2!1sen!2sus"
-                        width="100%"
-                        height="100%"
-                        style="border:0;"
-                        allowfullscreen=""
-                        loading="lazy">
-                    </iframe>
+                <h3 class="text-2xl font-bold text-purple-800 mb-6">What Our Community Says</h3>
+
+                <!-- Testimonials -->
+                <div class="space-y-6 mb-8">
+                    <div class="testimonial-card bg-white rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-bold">John Smith</h4>
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 italic">"The team at Saajin Block is incredibly responsive. I submitted a content proposal and received detailed feedback within 24 hours. Their commitment to quality knowledge sharing is impressive!"</p>
+                    </div>
+
+                    <div class="testimonial-card bg-white rounded-xl shadow-md p-6">
+                        <div class="flex items-center mb-4">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-bold">Sarah Johnson</h4>
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 italic">"As a regular reader, I contacted support with a technical issue. Not only was it resolved quickly, but they followed up to ensure I was satisfied with the solution. Excellent service!"</p>
+                    </div>
                 </div>
+
+                <!-- Additional Contact Methods -->
                 <div class="bg-white rounded-xl shadow-md p-6">
-                    <h4 class="font-bold text-lg text-purple-800 mb-4">Business Hours</h4>
-                    <ul class="space-y-2">
-                        <li class="flex justify-between">
-                            <span class="text-gray-600">Monday - Friday</span>
-                            <span class="font-medium">9:00 AM - 5:00 PM</span>
+                    <h4 class="font-bold text-lg text-purple-800 mb-4">Additional Ways to Connect</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                                    <i class="fas fa-comments text-purple-600"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h5 class="font-bold text-gray-800">Live Chat</h5>
+                                <p class="text-gray-600 text-sm">Available Monday-Friday, 9am-5pm EST</p>
+                            </div>
                         </li>
-                        <li class="flex justify-between">
-                            <span class="text-gray-600">Saturday</span>
-                            <span class="font-medium">10:00 AM - 3:00 PM</span>
+
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <i class="fab fa-twitter text-blue-600"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h5 class="font-bold text-gray-800">Social Media</h5>
+                                <p class="text-gray-600 text-sm">Follow us for updates and quick responses</p>
+                            </div>
                         </li>
-                        <li class="flex justify-between">
-                            <span class="text-gray-600">Sunday</span>
-                            <span class="font-medium">Closed</span>
+
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center">
+                                    <i class="fab fa-discord text-teal-600"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h5 class="font-bold text-gray-800">Community Discord</h5>
+                                <p class="text-gray-600 text-sm">Join our community of knowledge enthusiasts</p>
+                            </div>
                         </li>
                     </ul>
+
                     <div class="mt-6">
                         <h4 class="font-bold text-lg text-purple-800 mb-3">Follow Us</h4>
-                        <div class="flex space-x-4 social-icons">
+                        <div class="flex space-x-4">
                             <a href="#" class="bg-purple-100 text-purple-600 w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-200 transition-colors">
                                 <i class="fab fa-facebook-f"></i>
                             </a>
@@ -392,6 +446,9 @@
                             </a>
                             <a href="#" class="bg-blue-100 text-blue-700 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors">
                                 <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="#" class="bg-gray-100 text-gray-700 w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+                                <i class="fab fa-youtube"></i>
                             </a>
                         </div>
                     </div>
@@ -430,6 +487,15 @@
                 </button>
                 <div class="p-4 bg-white hidden">
                     <p class="text-gray-600">Absolutely! We value our readers' input and are always looking for new topics to cover. Use the contact form to suggest topics, and we'll consider them for future content.</p>
+                </div>
+            </div>
+            <div class="border border-gray-200 rounded-xl overflow-hidden">
+                <button class="w-full p-4 text-left bg-purple-50 flex justify-between items-center font-medium text-purple-800 hover:bg-purple-100 transition-colors">
+                    <span>Do you offer partnership opportunities?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="p-4 bg-white hidden">
+                    <p class="text-gray-600">Yes, we're always open to partnerships with educational institutions, content creators, and organizations that share our mission of spreading knowledge. Please reach out with your proposal.</p>
                 </div>
             </div>
         </div>
