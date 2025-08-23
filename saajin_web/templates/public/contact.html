@@ -10,9 +10,6 @@
         .gradient-bg {
             background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
         }
-        .accent-gradient {
-            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
-        }
         .hover-lift {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -32,7 +29,6 @@
             transform: scale(1.2);
             color: #14b8a6;
         }
-
         /* Mobile Menu Overlay Styles */
         .mobile-menu-overlay {
             position: fixed;
@@ -46,12 +42,10 @@
             visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
         }
-
         .mobile-menu-overlay.active {
             opacity: 1;
             visibility: visible;
         }
-
         .mobile-menu-drawer {
             position: fixed;
             top: 0;
@@ -64,11 +58,9 @@
             overflow-y: auto;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         }
-
         .mobile-menu-drawer.active {
             left: 0;
         }
-
         .mobile-menu-header {
             display: flex;
             justify-content: space-between;
@@ -76,7 +68,6 @@
             padding: 1rem;
             border-bottom: 1px solid #e5e7eb;
         }
-
         .mobile-menu-close {
             background: none;
             border: none;
@@ -85,15 +76,12 @@
             color: #6b7280;
             transition: color 0.2s;
         }
-
         .mobile-menu-close:hover {
             color: #4b5563;
         }
-
         .mobile-menu-links {
             padding: 1rem 0;
         }
-
         .mobile-menu-link {
             display: block;
             padding: 0.75rem 1rem;
@@ -102,73 +90,119 @@
             font-weight: 500;
             transition: background-color 0.2s, color 0.2s;
         }
-
         .mobile-menu-link:hover {
             background-color: #f3f4f6;
             color: #6d28d9;
         }
-
         .mobile-menu-link.active {
             color: #6d28d9;
             background-color: #f3f4f6;
             border-left: 3px solid #6d28d9;
         }
-
         /* Prevent body scroll when menu is open */
         body.menu-open {
             overflow: hidden;
         }
-
+        /* Hero section styles */
+        .hero-section {
+            background-color: #f9fafb;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(#6d28d9 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.05;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        /* Newsletter section styles */
+        .newsletter-section {
+            background-color: #f9fafb;
+            position: relative;
+        }
+        .newsletter-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to bottom, #ffffff, transparent);
+            z-index: 1;
+        }
+        .newsletter-content {
+            position: relative;
+            z-index: 2;
+        }
+        /* Light footer styles */
+        .footer-section {
+            background-color: #ffffff;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footer-link {
+            color: #6b7280;
+            transition: color 0.2s;
+        }
+        .footer-link:hover {
+            color: #6d28d9;
+        }
+        .footer-social {
+            color: #9ca3af;
+            transition: color 0.2s;
+        }
+        .footer-social:hover {
+            color: #6d28d9;
+        }
+        .footer-text {
+            color: #6b7280;
+        }
         /* Responsive improvements */
         @media (max-width: 768px) {
             .hero-section {
                 padding: 3rem 1rem;
             }
-
             .hero-section h2 {
                 font-size: 2rem;
             }
-
             .hero-section p {
                 font-size: 1rem;
             }
-
             .contact-card {
                 margin-bottom: 1.5rem;
             }
-
             .form-container {
                 padding: 1.5rem;
             }
-
             .map-container {
                 height: 250px;
             }
-
             .social-icons a {
                 width: 40px;
                 height: 40px;
             }
         }
-
         @media (max-width: 480px) {
             .hero-section h2 {
                 font-size: 1.75rem;
             }
-
             .hero-section .btn {
                 padding: 0.75rem 1.5rem;
                 font-size: 0.875rem;
             }
-
             .contact-card {
                 padding: 1.25rem;
             }
-
             .form-container {
                 padding: 1rem;
             }
-
             .map-container {
                 height: 200px;
             }
@@ -199,7 +233,6 @@
         </button>
     </div>
 </nav>
-
 <!-- Mobile Menu Overlay -->
 <div id="mobileMenuOverlay" class="mobile-menu-overlay">
     <div id="mobileMenuDrawer" class="mobile-menu-drawer">
@@ -223,25 +256,30 @@
         </div>
     </div>
 </div>
-
 <!-- Hero Section -->
-<section class="gradient-bg text-white py-16 px-6 relative overflow-hidden hero-section">
-    <div class="absolute top-0 right-0 w-64 h-64 bg-purple-500 rounded-full opacity-20 -mr-32 -mt-32"></div>
-    <div class="absolute bottom-0 left-0 w-48 h-48 bg-teal-300 rounded-full opacity-20 -ml-24 -mb-24"></div>
-    <div class="max-w-4xl mx-auto text-center relative z-10">
-        <h2 class="text-4xl md:text-5xl font-bold mb-6">Get in Touch</h2>
-        <p class="text-xl max-w-2xl mx-auto mb-8">We'd love to hear from you! Use the form below to send us a message.</p>
+<section class="hero-section py-16 px-6">
+    <div class="hero-pattern"></div>
+    <div class="hero-content max-w-4xl mx-auto text-center">
+        <div class="inline-block p-4 bg-white rounded-full shadow-md mb-8">
+            <div class="flex items-center space-x-2">
+                <div class="w-12 h-12 rounded-full gradient-bg flex items-center justify-center">
+                    <i class="fas fa-envelope text-white text-xl"></i>
+                </div>
+                <h1 class="font-bold text-3xl text-purple-800">Contact Us</h1>
+            </div>
+        </div>
+        <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gray-800">Get in Touch</h2>
+        <p class="text-xl max-w-2xl mx-auto mb-8 text-gray-600">We'd love to hear from you! Use the form below to send us a message.</p>
         <div class="flex flex-wrap justify-center gap-4">
-            <button class="bg-white text-purple-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors btn">
+            <a href="#contact-form" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors btn">
                 <i class="fas fa-envelope mr-2"></i> Send a Message
-            </button>
-            <button class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-700 transition-colors btn">
+            </a>
+            <a href="tel:+15551234567" class="bg-white text-purple-700 border border-purple-700 px-6 py-3 rounded-lg font-semibold hover:bg-purple-50 transition-colors btn">
                 <i class="fas fa-phone mr-2"></i> Call Us
-            </button>
+            </a>
         </div>
     </div>
 </section>
-
 <!-- Contact Info Cards -->
 <section class="py-16 px-6 bg-white">
     <div class="max-w-6xl mx-auto">
@@ -270,9 +308,8 @@
         </div>
     </div>
 </section>
-
 <!-- Contact Form and Map -->
-<section class="py-16 px-6 bg-gray-50">
+<section class="py-16 px-6 bg-gray-50" id="contact-form">
     <div class="max-w-6xl mx-auto">
         <div class="grid md:grid-cols-2 gap-12">
             <!-- Contact Form -->
@@ -363,7 +400,6 @@
         </div>
     </div>
 </section>
-
 <!-- FAQ Section -->
 <section class="py-16 px-6 bg-white">
     <div class="max-w-4xl mx-auto">
@@ -399,115 +435,101 @@
         </div>
     </div>
 </section>
-
-<!-- CTA Section -->
-<section class="py-16 px-6 accent-gradient text-white">
-    <div class="max-w-4xl mx-auto text-center">
-        <h3 class="text-3xl font-bold mb-4">Join Our Knowledge Community</h3>
-        <p class="text-xl mb-8 max-w-2xl mx-auto">Subscribe to our newsletter for the latest articles and updates</p>
+<!-- Newsletter Section -->
+<section class="newsletter-section py-16 px-6">
+    <div class="newsletter-content max-w-4xl mx-auto text-center">
+        <h3 class="text-3xl font-bold mb-4 text-gray-800">Join Our Knowledge Community</h3>
+        <p class="text-xl mb-8 max-w-2xl mx-auto text-gray-600">Subscribe to our newsletter for the latest articles and updates</p>
         <div class="max-w-md mx-auto flex">
-            <input type="email" placeholder="Your email address" class="bg-white text-gray-800 px-4 py-3 rounded-l-lg w-full focus:outline-none">
-            <button class="bg-purple-700 px-6 py-3 rounded-r-lg font-semibold hover:bg-purple-800 transition-colors">
+            <input type="email" placeholder="Your email address" class="bg-white text-gray-800 px-4 py-3 rounded-l-lg w-full focus:outline-none focus:ring-2 focus:ring-purple-300 shadow-sm">
+            <button class="bg-purple-600 px-6 py-3 rounded-r-lg font-semibold hover:bg-purple-700 transition-colors text-white">
                 Subscribe
             </button>
         </div>
     </div>
 </section>
-
 <!-- Footer -->
-<footer class="bg-gray-800 text-white py-12 px-6">
+<footer class="footer-section py-12 px-6">
     <div class="max-w-6xl mx-auto">
         <div class="grid md:grid-cols-4 gap-8">
             <div>
                 <div class="flex items-center space-x-2 mb-4">
-                    <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center">
+                    <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center">
                         <i class="fas fa-cube text-white"></i>
                     </div>
-                    <h4 class="font-bold text-xl">Saajin Block</h4>
+                    <h4 class="font-bold text-xl text-gray-800">Saajin Block</h4>
                 </div>
-                <p class="text-gray-400">Your gateway to knowledge across sports, medical, social, science, and history.</p>
+                <p class="footer-text">Your gateway to knowledge across sports, medical, social, science, and history.</p>
             </div>
             <div>
-                <h5 class="font-bold text-lg mb-4">Quick Links</h5>
+                <h5 class="font-bold text-lg mb-4 text-gray-800">Quick Links</h5>
                 <ul class="space-y-2">
-                    <li><a href="/" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
-                    <li><a href="/about/" class="text-gray-400 hover:text-white transition-colors">About</a></li>
-                    <li><a href="/contact/" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
-                    <li><a href="/categories/" class="text-gray-400 hover:text-white transition-colors">Categories</a></li>
+                    <li><a href="/" class="footer-link">Home</a></li>
+                    <li><a href="/all-articles/" class="footer-link">Articles</a></li>
+                    <li><a href="/about/" class="footer-link">About</a></li>
+                    <li><a href="/contact/" class="footer-link">Contact</a></li>
                 </ul>
             </div>
             <div>
-                <h5 class="font-bold text-lg mb-4">Categories</h5>
+                <h5 class="font-bold text-lg mb-4 text-gray-800">Categories</h5>
                 <ul class="space-y-2">
-                    <li><a href="/sports/" class="text-gray-400 hover:text-white transition-colors">Sports</a></li>
-                    <li><a href="/medical/" class="text-gray-400 hover:text-white transition-colors">Medical</a></li>
-                    <li><a href="/social/" class="text-gray-400 hover:text-white transition-colors">Social</a></li>
-                    <li><a href="/science/" class="text-gray-400 hover:text-white transition-colors">Science</a></li>
-                    <li><a href="/history/" class="text-gray-400 hover:text-white transition-colors">History</a></li>
+                    <li><a href="/sports/" class="footer-link">Sports</a></li>
+                    <li><a href="/medical/" class="footer-link">Medical</a></li>
+                    <li><a href="/social/" class="footer-link">Social</a></li>
+                    <li><a href="/science/" class="footer-link">Science</a></li>
+                    <li><a href="/history/" class="footer-link">History</a></li>
                 </ul>
             </div>
             <div>
-                <h5 class="font-bold text-lg mb-4">Connect With Us</h5>
+                <h5 class="font-bold text-lg mb-4 text-gray-800">Connect With Us</h5>
                 <div class="flex space-x-4 mb-4">
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl"><i class="fab fa-facebook"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors text-xl"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="footer-social text-xl"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="footer-social text-xl"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="footer-social text-xl"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="footer-social text-xl"><i class="fab fa-linkedin"></i></a>
                 </div>
-                <p class="text-gray-400">Subscribe to our newsletter for updates</p>
-                <div class="mt-2 flex">
-                    <input type="email" placeholder="Your email" class="bg-gray-700 text-white px-4 py-2 rounded-l-lg w-full focus:outline-none focus:ring-1 focus:ring-purple-500">
-                    <button class="bg-purple-600 px-4 py-2 rounded-r-lg hover:bg-purple-700 transition-colors">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </div>
+                <p class="footer-text mb-2">Contact us:</p>
+                <p class="footer-text">info@saajinblock.com</p>
+                <p class="footer-text">+1 (555) 123-4567</p>
             </div>
         </div>
-        <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>© <span id="year"></span> Saajin Block — All rights reserved.</p>
+        <div class="border-t border-gray-200 mt-8 pt-8 text-center">
+            <p class="footer-text">© <span id="year"></span> Saajin Block — All rights reserved.</p>
         </div>
     </div>
 </footer>
-
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
-
 // Mobile menu functionality
 const mobileMenuBtn = document.getElementById('mobileMenuBtn');
 const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
 const mobileMenuDrawer = document.getElementById('mobileMenuDrawer');
 const mobileMenuClose = document.getElementById('mobileMenuClose');
 const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
-
 // Open mobile menu
 mobileMenuBtn.addEventListener('click', function() {
     mobileMenuOverlay.classList.add('active');
     mobileMenuDrawer.classList.add('active');
     document.body.classList.add('menu-open');
 });
-
 // Close mobile menu
 function closeMobileMenu() {
     mobileMenuOverlay.classList.remove('active');
     mobileMenuDrawer.classList.remove('active');
     document.body.classList.remove('menu-open');
 }
-
 // Close menu when clicking on the overlay
 mobileMenuOverlay.addEventListener('click', function(e) {
     if (e.target === mobileMenuOverlay) {
         closeMobileMenu();
     }
 });
-
 // Close menu when clicking on the close button
 mobileMenuClose.addEventListener('click', closeMobileMenu);
-
 // Close menu when clicking on a link
 mobileMenuLinks.forEach(link => {
     link.addEventListener('click', closeMobileMenu);
 });
-
 // FAQ Accordion
 document.querySelectorAll('.border button').forEach(button => {
     button.addEventListener('click', () => {
@@ -519,7 +541,6 @@ document.querySelectorAll('.border button').forEach(button => {
         icon.classList.toggle('fa-chevron-up');
     });
 });
-
 // Form submission
 document.getElementById('contactForm').addEventListener('submit', function(e) {
     e.preventDefault();
